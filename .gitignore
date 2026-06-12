@@ -1,0 +1,13 @@
+# Ignore the heavy node_modules folder
+node_modules/
+
+# Ignore local environment variables (passwords/secrets)
+.env
+.env.local
+
+# Ignore your local SQLite database file
+*.sqlite3
+*.db
+
+# Ignore the README.md file as requested
+README.md

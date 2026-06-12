@@ -1,0 +1,17 @@
+{
+  "name": "fitness-beacon-bot",
+  "version": "1.0.0",
+  "description": "Low-friction fitness coordination Discord bot",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "build": "echo 'No build step required'"
+  },
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "sql.js": "^1.10.3",
+    "chrono-node": "^2.7.0",
+    "dotenv": "^16.4.5"
+  }
+}
