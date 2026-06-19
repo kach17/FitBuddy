@@ -97,6 +97,7 @@ export const profileCommand = {
     .addUserOption(opt => opt.setName("user").setDescription("User to view (defaults to you)")),
   
   async execute(interaction) {
+    await interaction.deferReply();
     const targetUser = interaction.options.getUser("user") || interaction.user;
     const stats = db.getUserStats(targetUser.id);
     const defaults = db.getUserDefaults(targetUser.id);
@@ -126,7 +127,7 @@ export const profileCommand = {
       embed.addFields({ name: "Activity Styles", value: Object.entries(existingPrefs).map(([k, v]) => `• ${k.charAt(0).toUpperCase() + k.slice(1)}: **${v}**`).join('\n'), inline: false });
     }
     
-    await interaction.reply({ embeds: [embed] });
+    await interaction.editReply({ embeds: [embed] });
   }
 };
 
@@ -322,9 +323,14 @@ export const testcronCommand = {
 export const preferencesCommand = {
   data: new SlashCommandBuilder().setName("preferences").setDescription("Set your activity preferences to find your perfect group"),
   async execute(interaction) {
+    if (interaction.isChatInputCommand && interaction.isChatInputCommand()) {
+      await interaction.deferReply({ flags: 64 });
+    } else {
+      await interaction.deferReply({ ephemeral: true });
+    }
     const roleMap = { 'Runner': 'run', 'Hiker': 'hike', 'Cyclist': 'cycle' };
-    const roles = ['Runner', 'Hiker', 'Cyclist'].filter(n => interaction.member.roles.cache.some(r => r.name === n));
-    if (!roles.length) return interaction.reply({ content: "Grab a role (Runner, Hiker, Cyclist) first.", flags: 64 });
+    const roles = ['Runner', 'Hiker', 'Cyclist'].filter(n => interaction.member.roles?.cache.some(r => r.name === n));
+    if (!roles.length) return interaction.editReply({ content: "Grab a role (Runner, Hiker, Cyclist) first." });
     
     // Create one select menu per role
     const rows = roles.map(r => new ActionRowBuilder().addComponents(
@@ -338,6 +344,6 @@ export const preferencesCommand = {
     ));
     
     const embed = new EmbedBuilder().setColor("#2B2D31").setTitle("Personalize Your Preferences").setDescription("Choose the styles that best describe your routines so others know what to expect.");
-    await interaction.reply({ embeds: [embed], components: rows, flags: 64 });
+    await interaction.editReply({ embeds: [embed], components: rows });
   }
 };
