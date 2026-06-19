@@ -190,6 +190,7 @@ export const profileCommand = {
     ),
 
   async execute(interaction) {
+    await interaction.deferReply();
     const targetUser = interaction.options.getUser("user") || interaction.user;
     const stats = db.getUserStats(targetUser.id);
     const defaults = db.getUserDefaults(targetUser.id);
@@ -248,7 +249,7 @@ export const profileCommand = {
       });
     }
 
-    await interaction.reply({ embeds: [embed] });
+    await interaction.editReply({ embeds: [embed] });
   },
 };
 
@@ -575,19 +576,48 @@ export const helpCommand = {
     await interaction.reply({ embeds: [embed], flags: 64 });
   },
 };
+
+export const helpCommand = {
+  data: new SlashCommandBuilder()
+    .setName("help")
+    .setDescription("Learn how to use the FitBuddy chatbot"),
+
+  async execute(interaction) {
+    const embed = new EmbedBuilder()
+      .setColor("#5865F2")
+      .setTitle("How to use FitBuddy💪")
+      .setDescription(
+        "**Create a meetup📍**\n" +
+          "`/beacon` details: tomorrow 9am run at city park \n \n " +
+          "**Set your activity style 🏃/🥾/🚴**\n" +
+          "`/preferences`\n\n" +
+          "**View your profile👤**\n" +
+          "`/profile`\n\n" +
+          "**Join an event📅**\n" +
+          "Click **Count Me In** on a posted beacon.\n\n" +
+          "**Pick sports roles👋**\n" +
+          "React in the roles channel to choose Runner, Hiker, or Cyclist.",
+      );
+    await interaction.reply({ embeds: [embed], flags: 64 });
+  },
+};
 export const preferencesCommand = {
   data: new SlashCommandBuilder()
     .setName("preferences")
     .setDescription("Set your activity preferences to find your perfect group"),
   async execute(interaction) {
+    if (interaction.isChatInputCommand && interaction.isChatInputCommand()) {
+      await interaction.deferReply({ flags: 64 });
+    } else {
+      await interaction.deferReply({ ephemeral: true });
+    }
     const roleMap = { Runner: "run", Hiker: "hike", Cyclist: "cycle" };
     const roles = ["Runner", "Hiker", "Cyclist"].filter((n) =>
-      interaction.member.roles.cache.some((r) => r.name === n),
+      interaction.member.roles?.cache.some((r) => r.name === n),
     );
     if (!roles.length)
-      return interaction.reply({
+      return interaction.editReply({
         content: "Grab a role (Runner, Hiker, Cyclist) first.",
-        flags: 64,
       });
 
     // Create one select menu per role
@@ -611,6 +641,6 @@ export const preferencesCommand = {
       .setDescription(
         "Choose the styles that best describe your routines so others know what to expect.",
       );
-    await interaction.reply({ embeds: [embed], components: rows, flags: 64 });
+    await interaction.editReply({ embeds: [embed], components: rows });
   },
 };
