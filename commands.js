@@ -577,6 +577,30 @@ export const helpCommand = {
   },
 };
 
+export const helpCommand = {
+  data: new SlashCommandBuilder()
+    .setName("help")
+    .setDescription("Learn how to use the FitBuddy chatbot"),
+
+  async execute(interaction) {
+    const embed = new EmbedBuilder()
+      .setColor("#5865F2")
+      .setTitle("How to use FitBuddy💪")
+      .setDescription(
+        "**Create a meetup📍**\n" +
+          "`/beacon` details: tomorrow 9am run at city park \n \n " +
+          "**Set your activity style 🏃/🥾/🚴**\n" +
+          "`/preferences`\n\n" +
+          "**View your profile👤**\n" +
+          "`/profile`\n\n" +
+          "**Join an event📅**\n" +
+          "Click **Count Me In** on a posted beacon.\n\n" +
+          "**Pick sports roles👋**\n" +
+          "React in the roles channel to choose Runner, Hiker, or Cyclist.",
+      );
+    await interaction.reply({ embeds: [embed], flags: 64 });
+  },
+};
 export const preferencesCommand = {
   data: new SlashCommandBuilder()
     .setName("preferences")
